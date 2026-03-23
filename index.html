@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informes de Gestión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #F5F4F0;
+    --surface:   #FFFFFF;
+    --navy:      #1B2E45;
+    --navy-lt:   #2C4A6E;
+    --ink:       #1A1A18;
+    --muted:     #7A7870;
+    --border:    #E2E0DA;
+    --accent:    #C8A96E;
+    --danger:    #C0392B;
+    --radius:    4px;
+    --sidebar-w: 280px;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 0 40px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .institution-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: #fff;
+  }
+
+  .institution-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+
+  .update-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 2px;
+  }
+
+  #ultima-actualizacion {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: flex;
+    height: calc(100vh - 64px);
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .sidebar-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    color: var(--navy);
+    font-weight: 600;
+    line-height: 1;
+    margin-top: 4px;
+  }
+
+  .sidebar-count span {
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .report-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .report-list::-webkit-scrollbar { width: 4px; }
+  .report-list::-webkit-scrollbar-track { background: transparent; }
+  .report-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .report-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .report-item:hover {
+    background: var(--bg);
+    border-left-color: var(--border);
+  }
+
+  .report-item.active {
+    background: #EEF3F9;
+    border-left-color: var(--navy);
+  }
+
+  .report-item.active .report-date { color: var(--navy-lt); }
+  .report-item.active .report-name { color: var(--navy); font-weight: 500; }
+
+  .report-icon {
+    width: 32px;
+    height-height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .report-icon svg { opacity: 0.4; }
+  .report-item.active .report-icon svg { opacity: 1; }
+
+  .report-info { flex: 1; min-width: 0; }
+
+  .report-date {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+
+  .report-name {
+    font-size: 13px;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+
+  .badge-nuevo {
+    font-size: 9px;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN ── */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .viewer-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .viewer-title {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .viewer-title span {
+    color: var(--muted);
+    font-weight: 400;
+    margin-right: 8px;
+  }
+
+  .btn-download {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--navy);
+    color: #fff;
+    padding: 7px 16px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+    letter-spacing: 0.3px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-download:hover { background: var(--navy-lt); }
+
+  #pdf-frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #e8e8e8;
+  }
+
+  /* ── EMPTY / LOADING ── */
+  .state-msg {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    gap: 12px;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .state-msg svg { opacity: 0.25; }
+  .state-msg p { font-size: 13px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 24px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; height: auto; }
+    aside { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { height: 80vh; }
+    .institution-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-mark" id="logo-inicial">U</div>
+    <div>
+      <div class="institution-name" id="nombre-institucion">Cargando...</div>
+      <div class="institution-sub">Informes de Gestión</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="update-label">Última actualización</div>
+    <div id="ultima-actualizacion">—</div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <aside>
+    <div class="sidebar-header">
+      <div class="sidebar-title">Archivo de informes</div>
+      <div class="sidebar-count" id="sidebar-count">
+        — <span>informes</span>
+      </div>
+    </div>
+    <div class="report-list" id="report-list">
+      <div class="state-msg">
+        <p>Cargando informes...</p>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="viewer-bar">
+      <div class="viewer-title">
+        <span>Visualizando</span>
+        <span id="viewer-nombre">—</span>
+      </div>
+      <a class="btn-download" id="btn-download" href="#" download>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar PDF
+      </a>
+    </div>
+
+    <iframe id="pdf-frame" title="Visor de informe"></iframe>
+  </main>
+
+</div>
+
+<footer>
+  <span id="footer-institucion">—</span>
+  <span>Generado automáticamente · Sistema de Gestión de Informes</span>
+</footer>
+
+<script>
+const MANIFEST_URL = 'manifesto.json';
+
+function iconoPDF() {
+  return `<svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 1H3C1.9 1 1 1.9 1 3v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7l-7-6z" stroke="#1B2E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="10 1 10 7 16 7" stroke="#1B2E45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="5" y1="13" x2="13" y2="13" stroke="#1B2E45" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="5" y1="17" x2="10" y2="17" stroke="#1B2E45" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function cargarInforme(url, nombre) {
+  document.getElementById('pdf-frame').src = url;
+  document.getElementById('viewer-nombre').textContent = nombre;
+  document.getElementById('btn-download').href = url;
+  document.getElementById('btn-download').download = nombre;
+
+  document.querySelectorAll('.report-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.url === url);
+  });
+}
+
+async function init() {
+  try {
+    const res = await fetch(MANIFEST_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('No se pudo cargar el manifiesto');
+    const data = await res.json();
+
+    // Header
+    const nombre = data.institucion || 'Institución';
+    document.getElementById('nombre-institucion').textContent = nombre;
+    document.getElementById('logo-inicial').textContent = nombre.charAt(0).toUpperCase();
+    document.getElementById('footer-institucion').textContent = nombre;
+    document.title = 'Informes · ' + nombre;
+
+    // Última actualización
+    document.getElementById('ultima-actualizacion').textContent =
+      data.ultima_actualizacion || '—';
+
+    // Lista de informes
+    const lista = document.getElementById('report-list');
+    const informes = data.informes || [];
+    document.getElementById('sidebar-count').innerHTML =
+      `${informes.length} <span>informe${informes.length !== 1 ? 's' : ''}</span>`;
+
+    if (informes.length === 0) {
+      lista.innerHTML = '<div class="state-msg"><p>No hay informes disponibles.</p></div>';
+      return;
+    }
+
+    lista.innerHTML = '';
+    informes.forEach((inf, idx) => {
+      const item = document.createElement('div');
+      item.className = 'report-item' + (idx === 0 ? ' active' : '');
+      item.dataset.url = inf.url;
+      item.innerHTML = `
+        <div class="report-icon">${iconoPDF()}</div>
+        <div class="report-info">
+          <div class="report-date">${inf.fecha_display || ''}</div>
+          <div class="report-name">${inf.nombre}</div>
+        </div>
+        ${idx === 0 ? '<span class="badge-nuevo">Nuevo</span>' : ''}
+      `;
+      item.addEventListener('click', () => cargarInforme(inf.url, inf.nombre));
+      lista.appendChild(item);
+    });
+
+    // Cargar el más reciente
+    cargarInforme(informes[0].url, informes[0].nombre);
+
+  } catch (err) {
+    document.getElementById('report-list').innerHTML =
+      `<div class="state-msg">
+        <p>No se pudieron cargar los informes.</p>
+        <p style="font-size:11px;margin-top:4px">${err.message}</p>
+      </div>`;
+    console.error(err);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
