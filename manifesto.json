@@ -1,7 +1,13 @@
 {
     "institucion":  "IUDPT",
-    "ultima_actualizacion":  "23/04/2026 15:02",
+    "ultima_actualizacion":  "23/04/2026 15:12",
     "informes":  [
+                     {
+                         "nombre":  "20260423_IUDPT_Dashboard.pdf",
+                         "fecha_display":  "23 de abril 2026",
+                         "fecha_iso":  "2026-04-23",
+                         "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/20260423_IUDPT_Dashboard.pdf"
+                     },
                      {
                          "nombre":  "20260423_IUDPT_Facturacion.pdf",
                          "fecha_display":  "23 de abril 2026",
