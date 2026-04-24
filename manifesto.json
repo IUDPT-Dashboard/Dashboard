@@ -6,30 +6,35 @@
                          "nombre":  "20260424_IUDPT_Dashboard.pdf",
                          "fecha_display":  "24 de abril 2026",
                          "fecha_iso":  "2026-04-24",
+                         "tipo": "dashboard",
                          "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/20260424_IUDPT_Dashboard.pdf"
                      },
                      {
                          "nombre":  "20260424_IUDPT_Facturacion.pdf",
                          "fecha_display":  "24 de abril 2026",
                          "fecha_iso":  "2026-04-24",
+                         "tipo": "facturacion",
                          "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/20260424_IUDPT_Facturacion.pdf"
                      },
                      {
                          "nombre":  "20260423_IUDPT_Dashboard.pdf",
                          "fecha_display":  "23 de abril 2026",
                          "fecha_iso":  "2026-04-23",
+                         "tipo": "dashboard",
                          "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/20260423_IUDPT_Dashboard.pdf"
                      },
                      {
                          "nombre":  "20260423_IUDPT_Facturacion.pdf",
                          "fecha_display":  "23 de abril 2026",
                          "fecha_iso":  "2026-04-23",
+                         "tipo": "facturacion",
                          "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/20260423_IUDPT_Facturacion.pdf"
                      },
                      {
                          "nombre":  "Dashboard Ingresos vs Egresos - Marzo 2026.pdf",
                          "fecha_display":  "Dashboard Ingresos vs Egresos - Marzo 2026.pdf",
                          "fecha_iso":  "2026-04-23",
+                          "tipo": "manual",
                          "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/Dashboard%20Ingresos%20vs%20Egresos%20-%20Marzo%202026.pdf"
                      }
                  ]
