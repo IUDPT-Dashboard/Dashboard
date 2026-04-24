@@ -3,6 +3,13 @@
     "ultima_actualizacion":  "24/04/2026 17:01",
     "informes":  [
                      {
+                         "nombre":  "Dashboard Ingresos vs Egresos - Febrero 2026.pdf",
+                         "fecha_display":  "Dashboard Ingresos vs Egresos - Febrero 2026.pdf",
+                         "fecha_iso":  "2026-04-24",
+                         "tipo":  "dashboard",
+                         "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/Dashboard%20Ingresos%20vs%20Egresos%20-%20Febrero%202026.pdf"
+                     },
+                     {
                          "nombre":  "Dashboard Ingresos vs Egresos - Enero 2026.pdf",
                          "fecha_display":  "Dashboard Ingresos vs Egresos - Enero 2026.pdf",
                          "fecha_iso":  "2026-04-24",
