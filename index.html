@@ -407,13 +407,17 @@
 const MANIFEST_URL = 'https://IUDPT-Dashboard.github.io/Dashboard/manifesto.json';
 
 const TIPO_LABELS = {
-  'dashboard':  'Matrícula',
-  'facturacion': 'Facturación'
+  'dashboard':   'Dashboard',
+  'facturacion': 'Facturación',
+  'ingresos':    'Ingresos vs Egresos',
+  'manual':      'Manual'
 };
 
 const TIPO_COLORS = {
-  'dashboard':  '#2C4A6E',
-  'facturacion': '#2D6A4F'
+  'dashboard':   '#2C4A6E',
+  'facturacion': '#2D6A4F',
+  'ingresos':    '#7B3F00',
+  'manual':      '#555555'
 };
 
 function iconoPDF(color) {
@@ -469,17 +473,18 @@ async function init() {
       return;
     }
 
-    // Clasificar: hoy = acceso rápido, manuales siempre en acceso rápido, resto = historial
     const hoy = new Date().toISOString().slice(0, 10);
 
-    const rapidos    = [];   // PDFs de hoy + todos los manuales
-    const historicos = [];   // Todo lo demás agrupado por fecha
+    const rapidos   = [];   // PDFs de hoy (dashboard + facturacion)
+    const ingresos  = [];   // Todos los de tipo ingresos
+    const historicos = [];  // Resto agrupado por fecha
 
     informes.forEach(inf => {
-      const tipo     = inf.tipo || 'dashboard';
-      const esHoy    = (inf.fecha_iso === hoy);
-      const esManual = (tipo === 'manual');
-      if (esHoy || esManual) {
+      const tipo  = inf.tipo || 'dashboard';
+      const esHoy = (inf.fecha_iso === hoy);
+      if (tipo === 'ingresos') {
+        ingresos.push(inf);
+      } else if (esHoy) {
         rapidos.push(inf);
       } else {
         historicos.push(inf);
@@ -489,102 +494,67 @@ async function init() {
     lista.innerHTML = '';
     let primerUrl = null, primerNombre = null;
 
-    // ── SECCIÓN ACCESO RÁPIDO ────────────────────────────────────────────
+    // ── SECCIÓN ACCESO RÁPIDO ─────────────────────────────────────────────
     if (rapidos.length > 0) {
-      const secLabel = document.createElement('div');
-      secLabel.style.cssText = `padding:12px 24px 4px;font-size:10px;letter-spacing:1.5px;
-        text-transform:uppercase;color:var(--muted);font-weight:500;`;
-      secLabel.textContent = 'Acceso rápido';
-      lista.appendChild(secLabel);
-
+      agregarSeccionLabel(lista, 'Acceso rápido');
       rapidos.forEach((inf, idx) => {
         const tipo  = inf.tipo || 'dashboard';
         const color = TIPO_COLORS[tipo] || '#1B2E45';
         const label = TIPO_LABELS[tipo] || tipo;
         if (!primerUrl) { primerUrl = inf.url; primerNombre = inf.nombre; }
-
-        const item = document.createElement('div');
-        item.className = 'report-item' + (idx === 0 ? ' active' : '');
-        item.dataset.url = inf.url;
-        item.innerHTML = `
-          <div class="report-icon">${iconoPDF(color)}</div>
-          <div class="report-info">
-            <div class="report-date" style="color:${color};font-weight:500;">${label} · ${inf.fecha_display || ''}</div>
-            <div class="report-name">${inf.nombre}</div>
-          </div>
-          ${idx === 0 ? '<span class="badge-nuevo">Nuevo</span>' : ''}
-        `;
-        item.addEventListener('click', () => cargarInforme(inf.url, inf.nombre));
+        const item = crearItem(inf, label, color, idx === 0, true);
         lista.appendChild(item);
       });
     }
 
-    // ── SECCIÓN HISTORIAL (colapsable) ───────────────────────────────────
+    // ── SECCIÓN INGRESOS VS EGRESOS ───────────────────────────────────────
+    if (ingresos.length > 0) {
+      agregarSeparador(lista);
+      const toggleIngresos = agregarSeccionToggle(lista, 'Ingresos vs Egresos', 'ing-container', 'ing-arrow');
+      const ingContainer = document.getElementById('ing-container');
+      if (!primerUrl) {
+        primerUrl = ingresos[0].url;
+        primerNombre = ingresos[0].nombre;
+      }
+      ingresos.forEach(inf => {
+        const color = TIPO_COLORS['ingresos'];
+        const label = TIPO_LABELS['ingresos'];
+        ingContainer.appendChild(crearItem(inf, label, color, false, false));
+      });
+      activarToggle(toggleIngresos, 'ing-container', 'ing-arrow');
+    }
+
+    // ── SECCIÓN HISTORIAL ─────────────────────────────────────────────────
     if (historicos.length > 0) {
-      // Separador
-      const sep = document.createElement('div');
-      sep.style.cssText = `margin:8px 16px;border-top:1px solid var(--border);`;
-      lista.appendChild(sep);
-
-      // Botón toggle
-      const toggleBtn = document.createElement('div');
-      toggleBtn.style.cssText = `padding:10px 24px 4px;font-size:10px;letter-spacing:1.5px;
-        text-transform:uppercase;color:var(--muted);font-weight:500;cursor:pointer;
-        display:flex;align-items:center;justify-content:space-between;user-select:none;`;
-      toggleBtn.innerHTML = `<span>Historial</span><span id="hist-arrow" style="font-size:12px;transition:transform .2s;">▼</span>`;
-      lista.appendChild(toggleBtn);
-
-      // Contenedor colapsable
-      const histContainer = document.createElement('div');
-      histContainer.id = 'hist-container';
-      histContainer.style.cssText = `overflow:hidden;max-height:0;transition:max-height .3s ease;`;
-      lista.appendChild(histContainer);
+      agregarSeparador(lista);
+      const toggleHist = agregarSeccionToggle(lista, 'Historial', 'hist-container', 'hist-arrow');
+      const histContainer = document.getElementById('hist-container');
 
       // Agrupar por fecha
       const grupos = {};
       historicos.forEach(inf => {
         const key = inf.fecha_iso || inf.fecha_display || inf.nombre;
-        if (!grupos[key]) grupos[key] = { fecha_display: inf.fecha_display || key, items: [] };
+        if (!grupos[key]) grupos[key] = { label: inf.fecha_display || key, items: [] };
         grupos[key].items.push(inf);
       });
 
-      let primerGrupo = true;
+      let primero = true;
       Object.entries(grupos).forEach(([key, grupo]) => {
         const fechaEl = document.createElement('div');
-        fechaEl.style.cssText = `padding:${primerGrupo?'6px':'10px'} 24px 4px;font-size:11px;
-          color:var(--muted);font-style:italic;`;
-        fechaEl.textContent = grupo.fecha_display;
+        fechaEl.style.cssText = `padding:${primero?'6px':'10px'} 24px 4px;font-size:11px;color:var(--muted);font-style:italic;`;
+        fechaEl.textContent = grupo.label;
         histContainer.appendChild(fechaEl);
-        primerGrupo = false;
-
+        primero = false;
         grupo.items.forEach(inf => {
           const tipo  = inf.tipo || 'dashboard';
           const color = TIPO_COLORS[tipo] || '#1B2E45';
           const label = TIPO_LABELS[tipo] || tipo;
           if (!primerUrl) { primerUrl = inf.url; primerNombre = inf.nombre; }
-
-          const item = document.createElement('div');
-          item.className = 'report-item';
-          item.dataset.url = inf.url;
-          item.innerHTML = `
-            <div class="report-icon">${iconoPDF(color)}</div>
-            <div class="report-info">
-              <div class="report-date" style="color:${color};font-weight:500;">${label}</div>
-              <div class="report-name">${inf.nombre}</div>
-            </div>
-          `;
-          item.addEventListener('click', () => cargarInforme(inf.url, inf.nombre));
-          histContainer.appendChild(item);
+          histContainer.appendChild(crearItem(inf, label, color, false, false));
         });
       });
 
-      // Toggle logic
-      let abierto = false;
-      toggleBtn.addEventListener('click', () => {
-        abierto = !abierto;
-        histContainer.style.maxHeight = abierto ? histContainer.scrollHeight + 'px' : '0';
-        document.getElementById('hist-arrow').style.transform = abierto ? 'rotate(180deg)' : '';
-      });
+      activarToggle(toggleHist, 'hist-container', 'hist-arrow');
     }
 
     if (primerUrl) cargarInforme(primerUrl, primerNombre);
@@ -597,7 +567,66 @@ async function init() {
   }
 }
 
+// ── Helpers UI ──────────────────────────────────────────────────────────────
+
+function agregarSeccionLabel(parent, texto) {
+  const el = document.createElement('div');
+  el.style.cssText = `padding:12px 24px 4px;font-size:10px;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--muted);font-weight:500;`;
+  el.textContent = texto;
+  parent.appendChild(el);
+}
+
+function agregarSeparador(parent) {
+  const sep = document.createElement('div');
+  sep.style.cssText = `margin:8px 16px;border-top:1px solid var(--border);`;
+  parent.appendChild(sep);
+}
+
+function agregarSeccionToggle(parent, texto, containerId, arrowId) {
+  const btn = document.createElement('div');
+  btn.style.cssText = `padding:10px 24px 4px;font-size:10px;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--muted);font-weight:500;cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;user-select:none;`;
+  btn.innerHTML = `<span>${texto}</span><span id="${arrowId}" style="font-size:12px;transition:transform .2s;">▶</span>`;
+  parent.appendChild(btn);
+
+  const container = document.createElement('div');
+  container.id = containerId;
+  container.style.cssText = `overflow:hidden;max-height:0;transition:max-height .35s ease;`;
+  parent.appendChild(container);
+
+  return btn;
+}
+
+function activarToggle(btn, containerId, arrowId) {
+  let abierto = false;
+  btn.addEventListener('click', () => {
+    abierto = !abierto;
+    const c = document.getElementById(containerId);
+    c.style.maxHeight = abierto ? c.scrollHeight + 'px' : '0';
+    document.getElementById(arrowId).style.transform = abierto ? 'rotate(90deg)' : '';
+  });
+}
+
+function crearItem(inf, label, color, activo, esNuevo) {
+  const item = document.createElement('div');
+  item.className = 'report-item' + (activo ? ' active' : '');
+  item.dataset.url = inf.url;
+  item.innerHTML = `
+    <div class="report-icon">${iconoPDF(color)}</div>
+    <div class="report-info">
+      <div class="report-date" style="color:${color};font-weight:500;">${label}</div>
+      <div class="report-name">${inf.nombre}</div>
+    </div>
+    ${esNuevo ? '<span class="badge-nuevo">Nuevo</span>' : ''}
+  `;
+  item.addEventListener('click', () => cargarInforme(inf.url, inf.nombre));
+  return item;
+}
+
 init();
 </script>
+</body>
 </body>
 </body>
