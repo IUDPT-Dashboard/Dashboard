@@ -1,7 +1,21 @@
 {
     "institucion":  "IUDPT",
-    "ultima_actualizacion":  "14/07/2026 11:08",
+    "ultima_actualizacion":  "15/07/2026 09:00",
     "informes":  [
+                     {
+                         "nombre":  "20260715_IUDPT_Dashboard.pdf",
+                         "fecha_display":  "15 de julio 2026",
+                         "fecha_iso":  "2026-07-15",
+                         "tipo":  "dashboard",
+                         "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/20260715_IUDPT_Dashboard.pdf"
+                     },
+                     {
+                         "nombre":  "20260715_IUDPT_Facturacion.pdf",
+                         "fecha_display":  "15 de julio 2026",
+                         "fecha_iso":  "2026-07-15",
+                         "tipo":  "facturacion",
+                         "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/20260715_IUDPT_Facturacion.pdf"
+                     },
                      {
                          "nombre":  "20260714_IUDPT_Dashboard.pdf",
                          "fecha_display":  "14 de julio 2026",
