@@ -1,7 +1,14 @@
 {
     "institucion":  "IUDPT",
-    "ultima_actualizacion":  "05/10/2026 10:04",
+    "ultima_actualizacion":  "05/10/2026 10:29",
     "informes":  [
+                     {
+                         "nombre":  "Dashboard Ingresos vs Egresos - Septiembre 2026.pdf",
+                         "fecha_display":  "Dashboard Ingresos vs Egresos - Septiembre 2026.pdf",
+                         "fecha_iso":  "2026-10-05",
+                         "tipo":  "ingresos",
+                         "url":  "https://IUDPT-Dashboard.github.io/Dashboard/informes/Dashboard%20Ingresos%20vs%20Egresos%20-%20Septiembre%202026.pdf"
+                     },
                      {
                          "nombre":  "20261005_IUDPT_Dashboard.pdf",
                          "fecha_display":  "5 de octubre 2026",
